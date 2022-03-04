@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const {dbConnection} = require('../database/config');
 
 const API_ENDPOINT = '/api';
 class Server {
@@ -10,11 +11,18 @@ class Server {
 			'users': `${API_ENDPOINT}/users`
 		};
 
+		// DB.
+		this.createDBConnection();
+
 		// Middlewares.
 		this.middlewares();
 
 		// Routes.
 		this.routes();
+	}
+
+	async createDBConnection() {
+		await dbConnection();
 	}
 
 	middlewares() {

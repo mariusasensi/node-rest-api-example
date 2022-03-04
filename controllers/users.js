@@ -1,24 +1,62 @@
+const bcryptjs = require('bcryptjs');
+const User = require('../models/user');
 
-const home = (request, response) => {
-  response.json({'msg': 'Hello world'});
+const home = async (request, response) => {
+  const {limit = 5, from = 0} = request.query;
+
+  const [total, users] = await Promise.all([
+    User.countDocuments({status: true}),
+    User.find({status: true}).skip(Number(from)).limit(Number(limit))
+  ]);
+
+  response.json({total, users});
 };
 
-const add = (request, response) => {
-  const body = request.body;
+const add = async (request, response) => {
+  const {name, mail, password, role} = request.body;
+  const user = new User({name, mail, password, role});
 
-  response.json({
-    'your-message': body
-  });
+  // Encrypt.
+  user.password = bcryptjs.hashSync(password, bcryptjs.genSaltSync());
+  
+  try {
+    await user.save();
+  } catch(error) {
+    if (error.name === 'ValidationError') {
+      response.status(400);
+    } else {
+      response.status(500);
+    }
+
+    response.json(error.message);
+    return;
+  }
+
+  response.status(201).json({user});
 }
 
-const put = (request, response) => {
+const put = async (request, response) => {
   const id = request.params.id;
-  const {q = 'no value'} = request.query;
+  const {_id, password, google, mail, ...user} = request.body;
 
-  response.json({
-    'your-param-id': id,
-    'your-query-q': q,
-  });
+  // Validar ID.
+  if (password) {
+    user.password = bcryptjs.hashSync(password, bcryptjs.genSaltSync());
+  }
+
+  await User.findByIdAndUpdate(id, user);
+  const updated = await User.findById(id);
+
+  response.json(updated);
 }
 
-module.exports = { home, add, put };
+const del = async (request, response) => {
+  const id = request.params.id;
+
+  await User.findByIdAndUpdate(id, {'status': false});
+  const updated = await User.findById(id);
+
+  response.json(updated);
+}
+
+module.exports = { home, add, put, del };
