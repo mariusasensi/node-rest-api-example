@@ -9,7 +9,8 @@ const home = async (request, response) => {
     User.find({status: true}).skip(Number(from)).limit(Number(limit))
   ]);
 
-  response.json({total, users});
+  const authUser = request.user;
+  response.json({total, users, authUser});
 };
 
 const add = async (request, response) => {
@@ -52,11 +53,14 @@ const put = async (request, response) => {
 
 const del = async (request, response) => {
   const id = request.params.id;
+  if (id === request.user.id) {
+    return response.status(400).json('You cannot erase yourself.');
+  }
 
   await User.findByIdAndUpdate(id, {'status': false});
   const updated = await User.findById(id);
 
-  response.json(updated);
+  response.json({updated});
 }
 
 module.exports = { home, add, put, del };

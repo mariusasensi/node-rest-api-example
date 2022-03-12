@@ -9,6 +9,22 @@ $ node app
 
 ## App: Endpoints
 
+* Init (creates a Admin user to start to use this app):
+```
+GET localhost:{port}/api/auth/init
+```
+
+* Login (to get a JWT token):
+```
+POST localhost:{port}/api/auth/login
+
+# Body example:
+{
+    "mail": "mymail@mail.com",
+    "password": "supersecret"
+}
+```
+
 * Get users:
 ```
 GET localhost:{port}/api/users #Get users, by default, limit is 5.
