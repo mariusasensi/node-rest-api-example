@@ -1,6 +1,7 @@
 const bcryptjs = require('bcryptjs');
 const { generateJWT } = require('../helpers/generate-jwt');
 const User = require('../models/user');
+const GoogleVerify = require('../helpers/google-verify');
 
 const init = async(request, response) => {
   const password = process.env.DEFAULT_ADMIN_PASSWORD;
@@ -56,4 +57,38 @@ const login = async (request, response) => {
   }
 };
 
-module.exports = {init, login};
+const googleSingIn = async (request, response) => {
+  const {token_id} = request.body;
+
+  try {
+    const {name, picture, email} = await GoogleVerify.verify(token_id);
+
+    let user = await User.findOne({'mail': email});
+    if (!user) {
+      const data = {
+        'name': name,
+        'mail': email,
+        'password': 'GoogleAuth',
+        'image': picture,
+        'google': true,
+        'role': 'USER_ROLE'
+      };
+
+      user = new User(data);
+      await user.save();
+    }
+
+    if (!user.status) {
+      response.status(401).json({'error': 'deleted user'})
+    }
+
+    const token = await generateJWT(user.id);
+    
+    response.json({user, token});
+  } catch(error) {
+    console.error(error);
+    return response.status(403).json('Invalid Google token!');
+  }
+}
+
+module.exports = {init, login, googleSingIn};
