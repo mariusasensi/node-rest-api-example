@@ -1,4 +1,4 @@
-const {Category, User} = require('../models');
+const {Category} = require('../models');
 
 const getAll = async(request, response) => {
   const {limit = 5, from = 0} = request.query;
@@ -21,12 +21,22 @@ const getById = async(request, response) => {
 const createOne = async(request, response) => {
   const name = request.body.name.toUpperCase();
   const currentUser = request.user;
-
   const category = new Category({name, status: true, createdBy: currentUser});
-  await category.save();
-  const newOne = await Category.findOne({name}).populate('createdBy', 'name').populate('updatedBy', 'name');
 
-  response.status(201).json({newOne});
+  try {
+    await category.save();
+    const newOne = await Category.findOne({name}).populate('createdBy', 'name').populate('updatedBy', 'name');
+    response.status(201).json({newOne});
+  } catch(error) {
+    if (error.name === 'ValidationError') {
+      response.status(400);
+    } else {
+      response.status(500);
+    }
+
+    response.json(error.message);
+    return;
+  }
 };
 
 const updateOne = async(request, response) => {
@@ -34,9 +44,20 @@ const updateOne = async(request, response) => {
   const name = request.body.name.toUpperCase();
   const currentUser = request.user;
 
-  await Category.findByIdAndUpdate(id, {name, updatedBy: currentUser});
-  const updated = await Category.findById(id).populate('createdBy', 'name').populate('updatedBy', 'name');
-  response.json(updated);
+  try {
+    await Category.findByIdAndUpdate(id, {name, updatedBy: currentUser});
+    const updated = await Category.findById(id).populate('createdBy', 'name').populate('updatedBy', 'name');
+    response.json(updated);
+  } catch(error) {
+    if (error.name === 'ValidationError') {
+      response.status(400);
+    } else {
+      response.status(500);
+    }
+
+    response.json(error.message);
+    return;
+  }
 };
 
 const deleteOne = async(request, response) => {

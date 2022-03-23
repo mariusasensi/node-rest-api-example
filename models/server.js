@@ -10,6 +10,7 @@ class Server {
 		this.endpointPrefixes = {
 			'auth': `${API_ENDPOINT}/auth`,
 			'categories': `${API_ENDPOINT}/categories`,
+			'products': `${API_ENDPOINT}/products`,
 			'users': `${API_ENDPOINT}/users`,
 		};
 
@@ -37,6 +38,7 @@ class Server {
 		this.app.use(this.endpointPrefixes.users, require('../routes/users'));
 		this.app.use(this.endpointPrefixes.auth, require('../routes/auth'));
 		this.app.use(this.endpointPrefixes.categories, require('../routes/categories'));
+		this.app.use(this.endpointPrefixes.products, require('../routes/products'));
 
 		// 404.
 		this.app.use((request, response) => {

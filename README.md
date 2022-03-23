@@ -100,3 +100,47 @@ PUT localhost:{port}/api/categories/:id
 ```
 DELETE localhost:{port}/api/categories/:id
 ``` 
+
+### Products:
+
+* Get products (Auth: no):
+```
+GET localhost:{port}/api/products #Get categories, by default, limit is 5.
+GET localhost:{port}/api/products?limit=10&from=4 #Get 10 categories from 4th categories (paginator).
+```
+
+* Get by id (Auth: no):
+```
+GET localhost:{port}/api/products/:id
+```
+
+* Create (Auth: login):
+```
+POST localhost:{port}/api/products
+
+# Body example:
+{
+    "name": "Product23",
+    "description": "ProductDescription23",
+    "price": "130",
+    "category_name": "Category2"
+}
+```
+
+* Update (Auth: login + ADMIN_ROLE):
+```
+PUT localhost:{port}/api/products/:id
+
+# Body example:
+{
+    "name": "Product23",
+    "description": "ProductDescription23-Edit",
+    "price": "130",
+    "category_name": "Category2"
+}
+```
+
+* Delete (Auth: login + ADMIN_ROLE):
+```
+DELETE localhost:{port}/api/products/:id
+``` 

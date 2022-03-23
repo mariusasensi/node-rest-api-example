@@ -1,4 +1,4 @@
-const {Role, User, Category} = require('../models');
+const {Role, User, Category, Product} = require('../models');
 
 const isValidRole = async (role = '') => {
   const existRole = await Role.findOne({ 'name': role });
@@ -22,10 +22,24 @@ const existUserId = async (id = '') => {
 }
 
 const existCategoryById = async(id) => {
-  const user = await Category.findById(id);
-  if (!user) {
+  const category = await Category.findById(id);
+  if (!category) {
     throw new Error('Invalid id');
   }
 }
 
-module.exports = { isValidRole, isValidMail, existUserId, existCategoryById };
+const existCategoryByName = async(name) => {
+  const category = await Category.findOne({name: name.toUpperCase(), status: true});
+  if (!category) {
+    throw new Error('Invalid category');
+  }
+}
+
+const existProductById = async(id) => {
+  const product = await Product.findById(id);
+  if (!product) {
+    throw new Error('Invalid id');
+  }
+}
+
+module.exports = { isValidRole, isValidMail, existUserId, existCategoryById, existCategoryByName, existProductById };
