@@ -8,8 +8,9 @@ class Server {
 		this.app = express();
 		this.port = process.env.PORT;
 		this.endpointPrefixes = {
-			'users': `${API_ENDPOINT}/users`,
 			'auth': `${API_ENDPOINT}/auth`,
+			'categories': `${API_ENDPOINT}/categories`,
+			'users': `${API_ENDPOINT}/users`,
 		};
 
 		// DB.
@@ -35,6 +36,7 @@ class Server {
 	routes() {
 		this.app.use(this.endpointPrefixes.users, require('../routes/users'));
 		this.app.use(this.endpointPrefixes.auth, require('../routes/auth'));
+		this.app.use(this.endpointPrefixes.categories, require('../routes/categories'));
 
 		// 404.
 		this.app.use((request, response) => {
