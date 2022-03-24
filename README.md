@@ -144,3 +144,11 @@ PUT localhost:{port}/api/products/:id
 ```
 DELETE localhost:{port}/api/products/:id
 ``` 
+
+### Searcher:
+
+* Get by collection and term (Auth: no):
+```
+GET localhost:{port}/api/search/:collection/:term
+```
+* Collections: `users`, `categories` or `products`.
