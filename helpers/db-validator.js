@@ -42,4 +42,13 @@ const existProductById = async(id) => {
   }
 }
 
-module.exports = { isValidRole, isValidMail, existUserId, existCategoryById, existCategoryByName, existProductById };
+const allowedCollections = (collection, allowedList) => {
+  const included = allowedList.includes(collection);
+  if (!included) {
+    throw new Error('Invalid collection');
+  }
+
+  return true;
+}
+
+module.exports = { isValidRole, isValidMail, existUserId, existCategoryById, existCategoryByName, existProductById, allowedCollections };

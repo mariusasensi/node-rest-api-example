@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const fileUpload = require('express-fileupload');
 const {dbConnection} = require('../database/config');
 
 const API_ENDPOINT = '/api';
@@ -13,6 +14,7 @@ class Server {
 			'products': `${API_ENDPOINT}/products`,
 			'users': `${API_ENDPOINT}/users`,
 			'sercher': `${API_ENDPOINT}/search`,
+			'uploader': `${API_ENDPOINT}/upload`,
 		};
 
 		// DB.
@@ -33,6 +35,11 @@ class Server {
 		this.app.use(cors());
 		this.app.use(express.json());
 		this.app.use(express.static('public'));
+		this.app.use(fileUpload({
+			useTempFiles: true,
+			tempFileDir: '/tmp/',
+			createParentPath: true,
+		}));
 	}
 
 	routes() {
@@ -41,6 +48,7 @@ class Server {
 		this.app.use(this.endpointPrefixes.categories, require('../routes/categories'));
 		this.app.use(this.endpointPrefixes.products, require('../routes/products'));
 		this.app.use(this.endpointPrefixes.sercher, require('../routes/searcher'));
+		this.app.use(this.endpointPrefixes.uploader, require('../routes/uploader'));
 
 		// 404.
 		this.app.use((request, response) => {
